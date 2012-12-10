@@ -38,6 +38,7 @@ public class MainApp {
 						System.out.println(pos2D.getY());
 					} else {
 						pos2D.setSpeed(0.4, 0);
+						
 					}
 					try {
 						sleep(50);
