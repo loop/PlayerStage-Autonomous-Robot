@@ -1,0 +1,58 @@
+Sample Test Regime
+
+Test 1: 
+javac MainApp.java
+
+Expected result: A file named MainApp.class must be produced without compiler error.  Warnings will be ignored.
+
+
+Test 2: 
+java MainApp
+
+Expected result: A valid candidate number.
+
+
+Test 3:
+player map3.cfg &
+java MainApp 0 9.5
+
+Expected result: The robot should move from coordinate x:0, y:0 to coordinate x:0, y:9.5 and stop at that location.
+
+
+Test 4:
+player map4.cfg &
+java MainApp -2 2
+
+Expected result: The robot should move from coordinate x:2, y:2 to coordinate x:-2, y:2.
+
+
+Test 5: 
+player map5.cfg &
+java MainApp -5 -5
+
+Expected result: The robot should move from coordinate x:3, y:4 to coordinate x:-5, y:-5.
+
+
+Test 6:
+player map6.cfg &
+java MainApp -8 8
+
+Expected result: The robot should move from coordinate x:8, y:-8 to coordinate x:-8, y:8.
+
+
+Test 7: 
+player map7.cfg &
+java MainApp -8 8
+
+Expected result: The robot should move from coordinate x:8, y:-8 to coordinate x:-8, y:8.
+
+
+Test 8 will be similar to Test 7 but with more obstacles.
+
+Test 9:
+player map9.cfg &
+javac ObstacleBot.java
+java ObstacleBot &
+java MainApp 9 9
+
+Expected result: The robot should move to coordinate x:9 y:9 without colliding with the moving obstacles.  Note that the moving obstacles change direction when something is front of it (including your robot).

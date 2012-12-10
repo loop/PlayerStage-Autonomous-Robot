@@ -1,0 +1,51 @@
+# insert the code of the .inc files here
+include "map.inc"
+include "tribot.inc"
+include "obstaclebot.inc"
+
+# definition of the window
+window 
+(
+  
+   # size in pixels
+   size [600 600]
+   
+   # pixels per meter
+   scale 25
+
+   show_footprints 1
+)
+
+# instantiate a flooplan
+floorplan 
+(
+   name "floorplan"
+   bitmap "map9.png"
+   size [22 22 2.5]
+)
+
+
+# instantiate a weebob robot
+tribot
+(
+   name "tribot0"
+   pose [-7 -7 0 203]
+)
+
+obstaclebot
+(
+   name "obstaclebot1"
+   pose [0 -3 0 0]
+)
+
+obstaclebot
+(
+   name "obstaclebot2"
+   pose [5 0 0 0]
+)
+
+obstaclebot
+(
+   name "obstaclebot3"
+   pose [-6 3 0 0]
+)
