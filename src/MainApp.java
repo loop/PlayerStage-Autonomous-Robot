@@ -17,21 +17,21 @@ public class MainApp {
 
 		if (args.length == 0) {
 			System.out.println("R04749");
-		} else if (args[0].equals("0") && Double.parseDouble(args[1]) > 0) {
-			testThree(roundTwoDecimals(Double.parseDouble(args[1])));
 		} else {
-			testFour(roundTwoDecimals(Double.parseDouble(args[0])),
-					roundTwoDecimals(Double.parseDouble(args[1])));
+			test(Double.parseDouble(args[0]),Double.parseDouble(args[1]));
 		}
 	}
 
-//	protected static void test() {
-//		connectToRobot();
-//		PlayerPose2d test = new PlayerPose2d(6, 6, Math.PI);
-//		PlayerPose2d test1 = new PlayerPose2d(6, 6, Math.PI);
-//
-//		pos2D.setPosition(test, new PlayerPose2d(), 1);
-//	}
+	protected static void test(double x, double y) {
+		connectToRobot();
+		PlayerPose2d test = new PlayerPose2d(x, y, Math.PI);
+		pos2D.setPosition(test, new PlayerPose2d(), 1);
+		
+	}
+
+	private static void printPositions() {
+		System.out.println(pos2D.getX() + " and " + pos2D.getY());
+	}
 
 	protected static void testThree(final double y) {
 
@@ -42,7 +42,7 @@ public class MainApp {
 
 				while (true) {
 					if (pos2D.getY() == y
-							|| ((pos2D.getY() >= y - 0.05) && (pos2D.getY() <= y + 0.05))) {
+							|| ((pos2D.getY() >= y - 0.1) && (pos2D.getY() <= y + 0.1))) {
 						pos2D.setSpeed(0, 0);
 						System.out.println(pos2D.getY());
 					} else {
@@ -68,7 +68,6 @@ public class MainApp {
 		boolean robotIsRunning = false;
 
 		connectToRobot();
-
 		if (pos2D.getY() == y) {
 			if (pos2D.getYaw() == 0) {
 				if (pos2D.getX() > x) {
