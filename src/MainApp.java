@@ -12,20 +12,35 @@ public class MainApp {
 	private static Position2DInterface pos2D = null;
 	private static RangerInterface sonar = null;
 	private static PlayerClient robot = null;
+	private static boolean robotIsMoving = true;
+	private static double[] sonarValues;
 
 	public static void main(String[] args) {
 
 		if (args.length == 0) {
 			System.out.println("R04749");
 		} else {
-			test(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
+			robotMovementToTarget(Double.parseDouble(args[0]),
+					Double.parseDouble(args[1]));
 		}
 	}
 
-	protected static void test(double x, double y) {
+	protected static void robotMovementToTarget(final double x, final double y) {
 		connectToRobot();
-		PlayerPose2d goTo = new PlayerPose2d(x, y, Math.PI);
-		pos2D.setPosition(goTo, new PlayerPose2d(), 1);
+
+		Thread collection = new Thread() {
+			public void run() {
+				collectionThread();
+				PlayerPose2d goTo = new PlayerPose2d(x, y, 0);
+				pos2D.setPosition(goTo, new PlayerPose2d(), 0);
+				try {
+					sleep(100);
+				} catch (InterruptedException e) {
+				}
+
+			}
+		};
+		collection.start();
 
 	}
 
@@ -46,6 +61,33 @@ public class MainApp {
 			System.exit(1);
 		}
 		robot.runThreaded(-1, -1);
+	}
+
+	private static void collectionThread() {
+		Thread collection = new Thread() {
+			public void run() {
+				while (true) {
+					if (sonar.isDataReady()) {
+						sonarValues = sonar.getData().getRanges();
+						System.out.println(sonarValues[0]);
+					}
+					try {
+						sleep(5);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		};
+		collection.start();
+	}
+
+	private static boolean obstacleAvoid() {
+		double distanceLimit = 0.4;
+		if (sonar.isDataReady() && (sonarValues[0] < 1 || sonarValues[1] < 1)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private static double roundTwoDecimals(double d) {
