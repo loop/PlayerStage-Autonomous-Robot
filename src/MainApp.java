@@ -31,12 +31,19 @@ public class MainApp {
 		Thread collection = new Thread() {
 			public void run() {
 				collectionThread();
+				
 				PlayerPose2d goTo = new PlayerPose2d(x, y, 0);
+				while(robotIsMoving){
 				pos2D.setPosition(goTo, new PlayerPose2d(), 0);
+				if(sonarValues[0] < 2 || sonarValues[1] < 2){
+					pos2D.setSpeed(0, 0);
+					robotIsMoving = false;
+				}
 				try {
 					sleep(100);
 				} catch (InterruptedException e) {
 				}
+			}
 
 			}
 		};
@@ -82,8 +89,8 @@ public class MainApp {
 	}
 
 	private static boolean obstacleAvoid() {
-		double distanceLimit = 0.4;
-		if (sonar.isDataReady() && (sonarValues[0] < 1 || sonarValues[1] < 1)) {
+		double distanceLimit = 2;
+		if (sonarValues[0] < distanceLimit || sonarValues[1] < distanceLimit) {
 			return true;
 		} else {
 			return false;
