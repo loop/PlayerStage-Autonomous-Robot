@@ -5,6 +5,7 @@ import javaclient3.PlayerException;
 import javaclient3.Position2DInterface;
 import javaclient3.RangerInterface;
 import javaclient3.structures.PlayerConstants;
+import javaclient3.structures.PlayerPose2d;
 
 public class MainApp {
 
@@ -16,12 +17,21 @@ public class MainApp {
 
 		if (args.length == 0) {
 			System.out.println("R04749");
-		} else if (args[0].equals("0") && Double.parseDouble(args[1]) > 0) {
-			testThree(roundTwoDecimals(Double.parseDouble(args[1])));
+			
+		} if (args[0].equals("lol")){
+			test();
 		} else {
 			testFour(roundTwoDecimals(Double.parseDouble(args[0])),
 					roundTwoDecimals(Double.parseDouble(args[1])));
 		}
+	}
+	
+	protected static void test(){
+		connectToRobot();
+		PlayerPose2d test = new PlayerPose2d(6, 6, Math.PI);
+		PlayerPose2d test1 = new PlayerPose2d(6, 6, Math.PI);
+		
+		pos2D.setPosition(test, new PlayerPose2d(), 1);
 	}
 
 	protected static void testThree(final double y) {
@@ -33,7 +43,7 @@ public class MainApp {
 
 				while (true) {
 					if (pos2D.getY() == y
-							|| ((pos2D.getY() >= y - 0.1) && (pos2D.getY() <= y + 0.1))) {
+							|| ((pos2D.getY() >= y - 0.05) && (pos2D.getY() <= y + 0.05))) {
 						pos2D.setSpeed(0, 0);
 						System.out.println(pos2D.getY());
 					} else {
@@ -59,8 +69,6 @@ public class MainApp {
 		boolean robotIsRunning = false;
 
 		connectToRobot();
-
-		robot.runThreaded(-1, -1);
 
 		if (pos2D.getY() == y) {
 			if (pos2D.getYaw() == 0) {
