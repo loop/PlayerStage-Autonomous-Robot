@@ -17,22 +17,21 @@ public class MainApp {
 
 		if (args.length == 0) {
 			System.out.println("R04749");
-			
-		} if (args[0].equals("lol")){
-			test();
+		} else if (args[0].equals("0") && Double.parseDouble(args[1]) > 0) {
+			testThree(roundTwoDecimals(Double.parseDouble(args[1])));
 		} else {
 			testFour(roundTwoDecimals(Double.parseDouble(args[0])),
 					roundTwoDecimals(Double.parseDouble(args[1])));
 		}
 	}
-	
-	protected static void test(){
-		connectToRobot();
-		PlayerPose2d test = new PlayerPose2d(6, 6, Math.PI);
-		PlayerPose2d test1 = new PlayerPose2d(6, 6, Math.PI);
-		
-		pos2D.setPosition(test, new PlayerPose2d(), 1);
-	}
+
+//	protected static void test() {
+//		connectToRobot();
+//		PlayerPose2d test = new PlayerPose2d(6, 6, Math.PI);
+//		PlayerPose2d test1 = new PlayerPose2d(6, 6, Math.PI);
+//
+//		pos2D.setPosition(test, new PlayerPose2d(), 1);
+//	}
 
 	protected static void testThree(final double y) {
 
@@ -48,7 +47,7 @@ public class MainApp {
 						System.out.println(pos2D.getY());
 					} else {
 						pos2D.setSpeed(0.4, 0);
-						
+
 					}
 					try {
 						sleep(50);
@@ -173,11 +172,11 @@ public class MainApp {
 						pos2d2.setSpeed(0, 0);
 						robotIsRunning = false;
 					} else {
-						if(checkDistance(pos2d2, x, y)){
+						if (checkDistance(pos2d2, x, y)) {
 							pos2d2.setSpeed(0.1, 0);
 						} else {
 							pos2d2.setSpeed(1, 0);
-						}		
+						}
 					}
 					try {
 						sleep(10);
@@ -190,11 +189,12 @@ public class MainApp {
 					double y) {
 				double currentX = pos2d2.getX();
 				double currentY = pos2d2.getY();
-				double distance = Math.sqrt((x-currentX)*(x-currentX) + (y-currentY)*(y-currentY));
-				if(distance < 2){
+				double distance = Math.sqrt((x - currentX) * (x - currentX)
+						+ (y - currentY) * (y - currentY));
+				if (distance < 2) {
 					return true;
 				} else {
-				return false;
+					return false;
 				}
 			}
 		};
