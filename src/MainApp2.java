@@ -109,7 +109,7 @@ public class MainApp2 {
 						turnB(-1);
 						break;
 					case 4:
-						System.out.println("This shouldn't happen");
+						System.out.println("Error");
 					}
 					goToXY();
 				}
