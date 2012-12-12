@@ -12,7 +12,6 @@ public class MainApp {
 	private static Position2DInterface pos2D = null;
 	private static RangerInterface sonar = null;
 	private static PlayerClient robot = null;
-	private static boolean robotIsMoving = true;
 	private static double[] sonarValues;
 
 	public static void main(String[] args) {
@@ -27,32 +26,11 @@ public class MainApp {
 
 	protected static void robotMovementToTarget(final double x, final double y) {
 		connectToRobot();
+		collectionThread();
 
-		Thread collection = new Thread() {
-			public void run() {
-				collectionThread();
-				
-				PlayerPose2d goTo = new PlayerPose2d(x, y, 0);
-				while(robotIsMoving){
-				pos2D.setPosition(goTo, new PlayerPose2d(), 0);
-				if(sonarValues[0] < 2 || sonarValues[1] < 2){
-					pos2D.setSpeed(0, 0);
-					robotIsMoving = false;
-				}
-				try {
-					sleep(100);
-				} catch (InterruptedException e) {
-				}
-			}
+		PlayerPose2d goTo = new PlayerPose2d(x, y, 0);
+		pos2D.setPosition(goTo, new PlayerPose2d(), 0);
 
-			}
-		};
-		collection.start();
-
-	}
-
-	private static void printPositions() {
-		System.out.println(pos2D.getX() + " and " + pos2D.getY());
 	}
 
 	private static void connectToRobot() {
@@ -72,11 +50,16 @@ public class MainApp {
 
 	private static void collectionThread() {
 		Thread collection = new Thread() {
+			double wallDistance = 1;
 			public void run() {
 				while (true) {
+
 					if (sonar.isDataReady()) {
 						sonarValues = sonar.getData().getRanges();
 						System.out.println(sonarValues[0]);
+						if(sonarValues[0] < wallDistance){
+							pos2D.setSpeed(0, 0);
+						}
 					}
 					try {
 						sleep(5);
@@ -86,15 +69,6 @@ public class MainApp {
 			}
 		};
 		collection.start();
-	}
-
-	private static boolean obstacleAvoid() {
-		double distanceLimit = 2;
-		if (sonarValues[0] < distanceLimit || sonarValues[1] < distanceLimit) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	private static double roundTwoDecimals(double d) {
