@@ -70,7 +70,7 @@ public class MainApp2 {
 		private Position2DInterface pos2D;
 		private RangerInterface sonar;
 		private double[] sonarV;
-		private double threshold = 0.7;
+		private double threshold = 0.5;
 		private double sThreshold = threshold - 0.4;
 		double x, y;
 		private boolean running;
