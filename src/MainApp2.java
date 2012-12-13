@@ -1,21 +1,17 @@
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import javaclient3.PlayerClient;
 import javaclient3.PlayerException;
 import javaclient3.Position2DInterface;
 import javaclient3.RangerInterface;
 import javaclient3.structures.PlayerConstants;
 import javaclient3.structures.PlayerPose2d;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class MainApp2 {
 
+	double x, y;
 	Position2DInterface pos2D = null;
 	RangerInterface sonar = null;
 	PlayerClient robot = null;
-	double x, y;
-	PlayerPose2d p;
+	PlayerPose2d pp2dTarget;
 
 	public MainApp2(String[] args) {
 		if (args.length == 0) {
@@ -25,19 +21,16 @@ public class MainApp2 {
 			connectToRobot();
 			x = Double.parseDouble(args[0]);
 			y = Double.parseDouble(args[1]);
-			// //////////////////////////////////////////////
-			for (int i = 0; i < args.length; i++) { // //
-				System.out.println(args[i]); // //
-			} // //
+
 			System.out.println("x : " + x); // //
 			System.out.println("y : " + y); // //
-			// //////////////////////////////////////////////
-			goToXY();
+
+			moveRobotToTarget();
 			initThread();
 		}
 	}
-	
-	public void connectToRobot(){
+
+	public void connectToRobot() {
 		try {
 			robot = new PlayerClient("localhost", 6665);
 			pos2D = robot.requestInterfacePosition2D(0,
@@ -52,12 +45,10 @@ public class MainApp2 {
 		robot.runThreaded(-1, -1);
 	}
 
-	public void goToXY() {
-		p = new PlayerPose2d();
+	public void moveRobotToTarget() {
+		pp2dTarget = new PlayerPose2d(x, y, 0);
 		System.out.println("Moving to co ordinates...");
-		p.setPx(x);
-		p.setPy(y);
-		pos2D.setPosition(p, new PlayerPose2d(), 1);
+		pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
 	}
 
 	public void initThread() {
@@ -130,11 +121,9 @@ public class MainApp2 {
 		}
 
 		public void goToXY() {
-			p = new PlayerPose2d();
+			pp2dTarget = new PlayerPose2d(x, y, 0);
 			System.out.println("Moving to co ordinates...");
-			p.setPx(x);
-			p.setPy(y);
-			pos2D.setPosition(p, new PlayerPose2d(), 1);
+			pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
 		}
 
 		public boolean isClose(double[] sonarValues) {
