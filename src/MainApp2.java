@@ -11,20 +11,18 @@ import javax.swing.JPanel;
 
 public class MainApp2 {
 
-	Robot robot;
+	Position2DInterface pos2D = null;
+	RangerInterface sonar = null;
+	PlayerClient robot = null;
 	double x, y;
 	PlayerPose2d p;
 
-	public MainApp2() {
-		System.out.println("R02823");
-	}
-
 	public MainApp2(String[] args) {
 		if (args.length == 0) {
-			System.out.println("R02823");
+			System.out.println("R04749");
 		}
 		if (args.length == 2) {
-			robot = new Robot();
+			connectToRobot();
 			x = Double.parseDouble(args[0]);
 			y = Double.parseDouble(args[1]);
 			// //////////////////////////////////////////////
@@ -37,10 +35,21 @@ public class MainApp2 {
 			goToXY();
 			initThread();
 		}
-
-		if (args.length == 3) {
-			robot = new Robot();
+	}
+	
+	public void connectToRobot(){
+		try {
+			robot = new PlayerClient("localhost", 6665);
+			pos2D = robot.requestInterfacePosition2D(0,
+					PlayerConstants.PLAYER_OPEN_MODE);
+			sonar = robot.requestInterfaceRanger(0,
+					PlayerConstants.PLAYER_OPEN_MODE);
+		} catch (PlayerException e) {
+			System.err.println("Robot: Error connecting to Player!\n>>>"
+					+ e.toString());
+			System.exit(1);
 		}
+		robot.runThreaded(-1, -1);
 	}
 
 	public void goToXY() {
@@ -48,21 +57,21 @@ public class MainApp2 {
 		System.out.println("Moving to co ordinates...");
 		p.setPx(x);
 		p.setPy(y);
-		robot.pos2D.setPosition(p, new PlayerPose2d(), 1);
+		pos2D.setPosition(p, new PlayerPose2d(), 1);
 	}
 
 	public void initThread() {
-		OdometryThread oThread = new OdometryThread(robot.pos2D);
+		OdometryThread oThread = new OdometryThread(pos2D);
 		oThread.setRunning(true);
 		oThread.start();
-		OAThread oaThread = new OAThread(robot.pos2D, robot.sonar, x, y);
+		OAThread oaThread = new OAThread(pos2D, sonar, x, y);
 		oaThread.setRunning(true);
 		oaThread.start();
 	}
 
 	public void printFinal() {
-		System.out.print("FINAL>>>\nX: " + robot.pos2D.getX() + "\nY: "
-				+ robot.pos2D.getY());
+		System.out.print("FINAL>>>\nX: " + pos2D.getX() + "\nY: "
+				+ pos2D.getY());
 	}
 
 	// OBSTACLE AVOIDANCE THREAD
@@ -109,7 +118,7 @@ public class MainApp2 {
 						turnB(-1);
 						break;
 					case 4:
-						System.out.println("Error");
+						System.out.println("This shouldn't happen");
 					}
 					goToXY();
 				}
@@ -125,7 +134,7 @@ public class MainApp2 {
 			System.out.println("Moving to co ordinates...");
 			p.setPx(x);
 			p.setPy(y);
-			robot.pos2D.setPosition(p, new PlayerPose2d(), 1);
+			pos2D.setPosition(p, new PlayerPose2d(), 1);
 		}
 
 		public boolean isClose(double[] sonarValues) {
@@ -169,7 +178,7 @@ public class MainApp2 {
 			}
 			pos2D.setSpeed(0, 0.5 * direction);
 			try {
-				sleep(1571);
+				sleep(3142);
 			} catch (InterruptedException e) {
 			}
 			pos2D.setSpeed(1, 0);
@@ -183,7 +192,7 @@ public class MainApp2 {
 			}
 			pos2D.setSpeed(1, 0);
 			try {
-				sleep(250);
+				sleep(500);
 			} catch (InterruptedException e) {
 			}
 			// pos2D.setSpeed(0, -0.5 * direction); try { sleep(3142); } catch
@@ -194,7 +203,7 @@ public class MainApp2 {
 			System.out.println("TurnB :" + direction);
 			pos2D.setSpeed(0, 0.5 * direction);
 			try {
-				sleep(1571);
+				sleep(3142);
 			} catch (InterruptedException e) {
 			}
 			pos2D.setSpeed(1, 0);
@@ -236,16 +245,8 @@ public class MainApp2 {
 				if (checkGoal()) {
 					System.out
 							.println("Goal has been reached...\nClosing in 10 seconds");
-					try {
-						sleep(5000);
-					} catch (InterruptedException e) {
-					}
 					System.out.println("X: " + pos2D.getX());
 					System.out.println("Y: " + pos2D.getY());
-					try {
-						sleep(5000);
-					} catch (InterruptedException e) {
-					}
 					System.exit(0);
 				}
 				try {
@@ -268,32 +269,6 @@ public class MainApp2 {
 				return false;
 			}
 			return false;
-		}
-	}
-
-	public class Robot {
-
-		Position2DInterface pos2D = null;
-		RangerInterface sonar = null;
-		PlayerClient robot = null;
-
-		public Robot() {
-			try {
-				robot = new PlayerClient("localhost", 6665);
-				pos2D = robot.requestInterfacePosition2D(0,
-						PlayerConstants.PLAYER_OPEN_MODE);
-				sonar = robot.requestInterfaceRanger(0,
-						PlayerConstants.PLAYER_OPEN_MODE);
-			} catch (PlayerException e) {
-				System.err.println("Robot: Error connecting to Player!\n>>>"
-						+ e.toString());
-				System.exit(1);
-			}
-			robot.runThreaded(-1, -1);
-		}
-
-		public void stop() {
-			pos2D.setSpeed(0, 0);
 		}
 	}
 
