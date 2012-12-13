@@ -1,8 +1,8 @@
- define exploresensor sensor 
+ define obstaclesensor sensor 
 (
     size [0.01 0.05 0.01]
     range [0 10]
-    fov 1
+    fov 5
     samples 1
     color_rgba [0 1 0 0.2]
 )
@@ -10,8 +10,12 @@
 
 define obstacle_ranger ranger 
 (
-   exploresensor ( pose [4 0 0.1 0] )
-   exploresensor ( pose [-4 0 0.1 180])
+   obstaclesensor ( pose [2.5 -0.4 -1.9 0] )
+   obstaclesensor ( pose [2.5 0 -1.9 0] )
+   obstaclesensor ( pose [2.5 0.4 -1.9 0] )
+   obstaclesensor ( pose [-2.5 -0.4 -1.9 180])
+   obstaclesensor ( pose [-2.5 0 -1.9 180])
+   obstaclesensor ( pose [-2.5 0.4 -1.9 180])
 )
 
 # definition of the robot
@@ -36,7 +40,7 @@ define obstacle_base position (
 
 define obstacle_with_sensors obstacle_base 
 (
-   robot_ranger( pose [0 0 0 0] )
+   obstacle_ranger( pose [0 0 0 0] )
 )
 
 define obstaclebot obstacle_with_sensors

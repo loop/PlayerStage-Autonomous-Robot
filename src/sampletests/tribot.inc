@@ -30,7 +30,7 @@ define robot_base position (
    origin [0 0 0 0]
    gui_nose 1
    obstacle_return 1
-   ranger_return 0.5
+   ranger_return 1
    blob_return 0
    fiducial_return 0
    localization "gps"

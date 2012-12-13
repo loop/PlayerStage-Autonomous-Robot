@@ -49,3 +49,9 @@ obstaclebot
    name "obstaclebot3"
    pose [-6 3 0 0]
 )
+
+obstaclebot
+(
+   name "obstaclebot4"
+   pose [0 6 0 90]
+)
