@@ -22,9 +22,8 @@ public class MainApp {
 			x = Double.parseDouble(args[0]);
 			y = Double.parseDouble(args[1]);
 
-			System.out.println("x : " + x); // //
-			System.out.println("y : " + y); // //
-
+			System.out.println("X: " + x + " Y: " + y);
+			
 			moveRobotToTarget();
 			initThread();
 		}
