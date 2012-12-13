@@ -11,5 +11,4 @@ define floorplan model (
    gui_move 0  
    gui_outline 0
    ranger_return 0
-   data 0
 )
