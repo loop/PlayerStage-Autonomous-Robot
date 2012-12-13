@@ -16,12 +16,12 @@ public class MainApp2 {
 	PlayerPose2d p;
 
 	public MainApp2() {
-		System.out.println("R04749");
+		System.out.println("R02823");
 	}
 
 	public MainApp2(String[] args) {
 		if (args.length == 0) {
-			System.out.println("R04749");
+			System.out.println("R02823");
 		}
 		if (args.length == 2) {
 			robot = new Robot();
@@ -29,10 +29,10 @@ public class MainApp2 {
 			y = Double.parseDouble(args[1]);
 			// //////////////////////////////////////////////
 			for (int i = 0; i < args.length; i++) { // //
-				//System.out.println(args[i]); // //
+				System.out.println(args[i]); // //
 			} // //
-			//System.out.println("x : " + x); // //
-			//System.out.println("y : " + y); // //
+			System.out.println("x : " + x); // //
+			System.out.println("y : " + y); // //
 			// //////////////////////////////////////////////
 			goToXY();
 			initThread();
@@ -45,7 +45,7 @@ public class MainApp2 {
 
 	public void goToXY() {
 		p = new PlayerPose2d();
-		//System.out.println("Moving to co ordinates...");
+		System.out.println("Moving to co ordinates...");
 		p.setPx(x);
 		p.setPy(y);
 		robot.pos2D.setPosition(p, new PlayerPose2d(), 1);
@@ -61,8 +61,8 @@ public class MainApp2 {
 	}
 
 	public void printFinal() {
-		//System.out.print("FINAL>>>\nX: " + robot.pos2D.getX() + "\nY: "
-				//+ robot.pos2D.getY());
+		System.out.print("FINAL>>>\nX: " + robot.pos2D.getX() + "\nY: "
+				+ robot.pos2D.getY());
 	}
 
 	// OBSTACLE AVOIDANCE THREAD
@@ -122,7 +122,7 @@ public class MainApp2 {
 
 		public void goToXY() {
 			p = new PlayerPose2d();
-		//	System.out.println("Moving to co ordinates...");
+			System.out.println("Moving to co ordinates...");
 			p.setPx(x);
 			p.setPy(y);
 			robot.pos2D.setPosition(p, new PlayerPose2d(), 1);
@@ -160,7 +160,7 @@ public class MainApp2 {
 		}
 
 		public void turnA(int direction) {
-			//System.out.println("TurnA :" + direction);
+			System.out.println("TurnA :" + direction);
 			int a;
 			if (direction == 1) {
 				a = 6;
@@ -169,7 +169,7 @@ public class MainApp2 {
 			}
 			pos2D.setSpeed(0, 0.5 * direction);
 			try {
-				sleep(1500);
+				sleep(1571);
 			} catch (InterruptedException e) {
 			}
 			pos2D.setSpeed(1, 0);
@@ -183,16 +183,18 @@ public class MainApp2 {
 			}
 			pos2D.setSpeed(1, 0);
 			try {
-				sleep(500);
+				sleep(250);
 			} catch (InterruptedException e) {
 			}
+			// pos2D.setSpeed(0, -0.5 * direction); try { sleep(3142); } catch
+			// (InterruptedException e) {}
 		}
 
 		public void turnB(int direction) {
-			//System.out.println("TurnB :" + direction);
+			System.out.println("TurnB :" + direction);
 			pos2D.setSpeed(0, 0.5 * direction);
 			try {
-				sleep(1500);
+				sleep(1571);
 			} catch (InterruptedException e) {
 			}
 			pos2D.setSpeed(1, 0);
@@ -205,16 +207,11 @@ public class MainApp2 {
 		public boolean isClear(double one, double two, double[] sonarV) {
 			if ((one > (threshold + 1) && two > (threshold + 1))
 					|| (isClose(sonarV))) {
-				//System.out.println("Sensors clear:\n1. " + one + "\n2. " + two);
+				System.out.println("Sensors clear:\n1. " + one + "\n2. " + two);
 				return true;
 			} else {
 				return false;
 			}
-		}
-		
-		public void turnWest() {
-			PlayerPose2d west = new PlayerPose2d(pos2D.getX(), pos2D.getY(), Math.PI);
-			pos2D.setPosition(west, new PlayerPose2d(), 1);
 		}
 	}
 
@@ -237,14 +234,14 @@ public class MainApp2 {
 		public void run() {
 			while (running) {
 				if (checkGoal()) {
-					//System.out
-							//.println("Goal has been reached...\nClosing in 10 seconds");
+					System.out
+							.println("Goal has been reached...\nClosing in 10 seconds");
 					try {
 						sleep(5000);
 					} catch (InterruptedException e) {
 					}
-					//System.out.println("X: " + pos2D.getX());
-					//System.out.println("Y: " + pos2D.getY());
+					System.out.println("X: " + pos2D.getX());
+					System.out.println("Y: " + pos2D.getY());
 					try {
 						sleep(5000);
 					} catch (InterruptedException e) {

@@ -1,5 +1,3 @@
-import java.text.DecimalFormat;
-
 import javaclient3.PlayerClient;
 import javaclient3.PlayerException;
 import javaclient3.Position2DInterface;
