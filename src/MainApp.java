@@ -68,7 +68,7 @@ public class MainApp {
 	public class OAThread extends Thread {
 		private Position2DInterface pos2D;
 		private RangerInterface sonar;
-		private double[] sonarV;
+		private double[] sonarValues;
 		private double threshold = 0.5;
 		private double sThreshold = threshold - 0.4;
 		double x, y;
@@ -92,9 +92,9 @@ public class MainApp {
 			while (running) {
 				while (!sonar.isDataReady())
 					;
-				sonarV = sonar.getData().getRanges();
-				if (isClose(sonarV)) {
-					switch (checkDirection(sonarV)) {
+				sonarValues = sonar.getData().getRanges();
+				if (isClose(sonarValues)) {
+					switch (checkDirection(sonarValues)) {
 					case 0:
 						turnA(1);
 						break;
@@ -125,32 +125,32 @@ public class MainApp {
 			pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
 		}
 
-		public boolean isClose(double[] sonarValues) {
-			if ((sonarValues[0] < threshold) || (sonarValues[1] < threshold)
-					|| (sonarValues[2] < sThreshold)
-					|| (sonarValues[3] < sThreshold)
-					|| (sonarValues[6] < sThreshold)
-					|| (sonarValues[7] < sThreshold)) {
+		public boolean isClose(double[] sonarValuesalues) {
+			if ((sonarValuesalues[0] < threshold) || (sonarValuesalues[1] < threshold)
+					|| (sonarValuesalues[2] < sThreshold)
+					|| (sonarValuesalues[3] < sThreshold)
+					|| (sonarValuesalues[6] < sThreshold)
+					|| (sonarValuesalues[7] < sThreshold)) {
 				return true;
 			} else {
 				return false;
 			}
 		}
 
-		public int checkDirection(double[] sonarValues) {
-			if ((sonarValues[0] < threshold) || (sonarValues[1] < threshold)) {
-				double fLeft = sonarValues[1];
-				double fRight = sonarValues[0];
+		public int checkDirection(double[] sonarValuesalues) {
+			if ((sonarValuesalues[0] < threshold) || (sonarValuesalues[1] < threshold)) {
+				double fLeft = sonarValuesalues[1];
+				double fRight = sonarValuesalues[0];
 				if (fLeft > fRight) {
 					return 0;
 				} else {
 					return 1;
 				}
-			} else if ((sonarValues[2] < sThreshold)
-					|| (sonarValues[3] < sThreshold)) {
+			} else if ((sonarValuesalues[2] < sThreshold)
+					|| (sonarValuesalues[3] < sThreshold)) {
 				return 3;
-			} else if ((sonarValues[6] < sThreshold)
-					|| (sonarValues[7] < sThreshold)) {
+			} else if ((sonarValuesalues[6] < sThreshold)
+					|| (sonarValuesalues[7] < sThreshold)) {
 				return 2;
 			} else
 				return 4;
@@ -164,7 +164,7 @@ public class MainApp {
 			} else {
 				a = 2;
 			}
-			pos2D.setSpeed(0, 0.5 * direction);
+			pos2D.setSpeed(0, 0.3 * direction);
 			try {
 				sleep(3142);
 			} catch (InterruptedException e) {
@@ -172,15 +172,15 @@ public class MainApp {
 			pos2D.setSpeed(1, 0);
 			while (true) {
 				if (sonar.isDataReady()) {
-					sonarV = sonar.getData().getRanges();
+					sonarValues = sonar.getData().getRanges();
 				}
-				if (isClear(sonarV[a], sonarV[a + 1], sonarV)) {
+				if (isClear(sonarValues[a], sonarValues[a + 1], sonarValues)) {
 					break;
 				}
 			}
 			pos2D.setSpeed(1, 0);
 			try {
-				sleep(500);
+				sleep(800);
 			} catch (InterruptedException e) {
 			}
 			// pos2D.setSpeed(0, -0.5 * direction); try { sleep(3142); } catch
@@ -189,7 +189,7 @@ public class MainApp {
 
 		public void turnB(int direction) {
 			System.out.println("TurnB :" + direction);
-			pos2D.setSpeed(0, 0.5 * direction);
+			pos2D.setSpeed(0, 0.3 * direction);
 			try {
 				sleep(3142);
 			} catch (InterruptedException e) {
@@ -201,9 +201,9 @@ public class MainApp {
 			}
 		}
 
-		public boolean isClear(double one, double two, double[] sonarV) {
-			if ((one > (threshold + 1) && two > (threshold + 1))
-					|| (isClose(sonarV))) {
+		public boolean isClear(double one, double two, double[] sonarValues) {
+			if ((one > (threshold + 1.5) && two > (threshold + 1.5))
+					|| (isClose(sonarValues))) {
 				System.out.println("Sensors clear:\n1. " + one + "\n2. " + two);
 				return true;
 			} else {
