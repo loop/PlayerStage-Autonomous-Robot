@@ -23,9 +23,13 @@ public class MainApp {
 			y = Double.parseDouble(args[1]);
 
 			System.out.println("X: " + x + " Y: " + y);
-			
+
 			moveRobotToTarget();
-			initThread();
+			targetChecker tcCheckTarget = new targetChecker(pos2D, true);
+			AvoidanceThread atAvoidStuff = new AvoidanceThread(pos2D, sonar, x,
+					y, true);
+			tcCheckTarget.start();
+			atAvoidStuff.start();
 		}
 	}
 
@@ -50,20 +54,12 @@ public class MainApp {
 		pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
 	}
 
-	public void initThread() {
-		OdometryThread oThread = new OdometryThread(pos2D, true);
-		oThread.start();
-		OAThread oaThread = new OAThread(pos2D, sonar, x, y, true);
-		oaThread.start();
-	}
-
 	public void printFinal() {
 		System.out.print("FINAL>>>\nX: " + pos2D.getX() + "\nY: "
 				+ pos2D.getY());
 	}
 
-	// OBSTACLE AVOIDANCE THREAD
-	public class OAThread extends Thread {
+	private class AvoidanceThread extends Thread {
 		private Position2DInterface pos2D;
 		private RangerInterface sonar;
 		private double[] sonarValues;
@@ -72,9 +68,9 @@ public class MainApp {
 		double x, y;
 		private boolean isProgramRunning;
 
-
-		public OAThread(Position2DInterface pos2D, RangerInterface sonar,
-				double x, double y, boolean isProgramRunning) {
+		public AvoidanceThread(Position2DInterface pos2D,
+				RangerInterface sonar, double x, double y,
+				boolean isProgramRunning) {
 			super();
 			this.pos2D = pos2D;
 			this.sonar = sonar;
@@ -122,7 +118,8 @@ public class MainApp {
 		}
 
 		public boolean isClose(double[] sonarValuesalues) {
-			if ((sonarValuesalues[0] < threshold) || (sonarValuesalues[1] < threshold)
+			if ((sonarValuesalues[0] < threshold)
+					|| (sonarValuesalues[1] < threshold)
 					|| (sonarValuesalues[2] < sThreshold)
 					|| (sonarValuesalues[3] < sThreshold)
 					|| (sonarValuesalues[6] < sThreshold)
@@ -134,10 +131,11 @@ public class MainApp {
 		}
 
 		public int checkDirection(double[] sonarValuesalues) {
-			if ((sonarValuesalues[0] < threshold) || (sonarValuesalues[1] < threshold)) {
-				double fLeft = sonarValuesalues[1];
-				double fRight = sonarValuesalues[0];
-				if (fLeft > fRight) {
+			if ((sonarValuesalues[0] < threshold)
+					|| (sonarValuesalues[1] < threshold)) {
+				double frontLeftSensor = sonarValuesalues[1];
+				double frontRightSensor = sonarValuesalues[0];
+				if (frontLeftSensor > frontRightSensor) {
 					return 0;
 				} else {
 					return 1;
@@ -170,7 +168,8 @@ public class MainApp {
 				if (sonar.isDataReady()) {
 					sonarValues = sonar.getData().getRanges();
 				}
-				if (isClear(sonarValues[sonarSensorNumber], sonarValues[sonarSensorNumber], sonarValues)) {
+				if (isClear(sonarValues[sonarSensorNumber],
+						sonarValues[sonarSensorNumber], sonarValues)) {
 					break;
 				}
 			}
@@ -179,8 +178,6 @@ public class MainApp {
 				sleep(800);
 			} catch (InterruptedException e) {
 			}
-			// pos2D.setSpeed(0, -0.5 * direction); try { sleep(3142); } catch
-			// (InterruptedException e) {}
 		}
 
 		public void turnLeftOrRight2(int direction) {
@@ -208,13 +205,12 @@ public class MainApp {
 		}
 	}
 
-	// ODOMETRY THREAD
-	public class OdometryThread extends Thread {
+	private class targetChecker extends Thread {
 
-		private Position2DInterface pos2D;
 		private boolean isProgramRunning;
+		private Position2DInterface pos2D;
 
-		public OdometryThread(Position2DInterface pos2D, boolean isProgramRunning) {
+		public targetChecker(Position2DInterface pos2D, boolean isProgramRunning) {
 			super();
 			this.pos2D = pos2D;
 			this.isProgramRunning = isProgramRunning;
@@ -223,7 +219,7 @@ public class MainApp {
 		@Override
 		public void run() {
 			while (isProgramRunning) {
-				if (checkGoal()) {
+				if (robotTargetChecker()) {
 					System.out
 							.println("Goal has been reached...\nClosing in 10 seconds");
 					System.out.println("X: " + pos2D.getX());
@@ -237,13 +233,13 @@ public class MainApp {
 			}
 		}
 
-		public boolean checkGoal() {
-			double currX, currY;
+		public boolean robotTargetChecker() {
+			double currentX, currentY;
 			if (pos2D.isDataReady()) {
-				currX = pos2D.getX();
-				currY = pos2D.getY();
-				if ((currX > x - 0.1) && (currX < x + 0.1) && (currY > y - 0.1)
-						&& (currY < y + 0.1)) {
+				currentX = pos2D.getX();
+				currentY = pos2D.getY();
+				if ((currentX > x - 0.1) && (currentX < x + 0.1)
+						&& (currentY > y - 0.1) && (currentY < y + 0.1)) {
 					return true;
 				}
 			} else {
