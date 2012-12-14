@@ -51,11 +51,9 @@ public class MainApp {
 	}
 
 	public void initThread() {
-		OdometryThread oThread = new OdometryThread(pos2D);
-		oThread.setRunning(true);
+		OdometryThread oThread = new OdometryThread(pos2D, true);
 		oThread.start();
-		OAThread oaThread = new OAThread(pos2D, sonar, x, y);
-		oaThread.setRunning(true);
+		OAThread oaThread = new OAThread(pos2D, sonar, x, y, true);
 		oaThread.start();
 	}
 
@@ -72,40 +70,38 @@ public class MainApp {
 		private double threshold = 0.5;
 		private double sThreshold = threshold - 0.4;
 		double x, y;
-		private boolean running;
+		private boolean isProgramRunning;
 
-		public void setRunning(boolean running) {
-			this.running = running;
-		}
 
 		public OAThread(Position2DInterface pos2D, RangerInterface sonar,
-				double x, double y) {
+				double x, double y, boolean isProgramRunning) {
 			super();
 			this.pos2D = pos2D;
 			this.sonar = sonar;
+			this.isProgramRunning = isProgramRunning;
 			this.x = x;
 			this.y = y;
 		}
 
 		@Override
 		public void run() {
-			while (running) {
+			while (isProgramRunning) {
 				while (!sonar.isDataReady())
 					;
 				sonarValues = sonar.getData().getRanges();
 				if (isClose(sonarValues)) {
 					switch (checkDirection(sonarValues)) {
 					case 0:
-						turnA(1);
+						turnLeftOrRight(1);
 						break;
 					case 1:
-						turnA(-1);
+						turnLeftOrRight(-1);
 						break;
 					case 2:
-						turnB(1);
+						turnLeftOrRight2(1);
 						break;
 					case 3:
-						turnB(-1);
+						turnLeftOrRight2(-1);
 						break;
 					case 4:
 						System.out.println("This shouldn't happen");
@@ -156,13 +152,13 @@ public class MainApp {
 				return 4;
 		}
 
-		public void turnA(int direction) {
-			System.out.println("TurnA :" + direction);
-			int a;
+		public void turnLeftOrRight(int direction) {
+			System.out.println("turnLeftOrRight :" + direction);
+			int sonarSensorNumber;
 			if (direction == 1) {
-				a = 6;
+				sonarSensorNumber = 6;
 			} else {
-				a = 2;
+				sonarSensorNumber = 2;
 			}
 			pos2D.setSpeed(0, 0.3 * direction);
 			try {
@@ -174,7 +170,7 @@ public class MainApp {
 				if (sonar.isDataReady()) {
 					sonarValues = sonar.getData().getRanges();
 				}
-				if (isClear(sonarValues[a], sonarValues[a + 1], sonarValues)) {
+				if (isClear(sonarValues[sonarSensorNumber], sonarValues[sonarSensorNumber], sonarValues)) {
 					break;
 				}
 			}
@@ -187,8 +183,8 @@ public class MainApp {
 			// (InterruptedException e) {}
 		}
 
-		public void turnB(int direction) {
-			System.out.println("TurnB :" + direction);
+		public void turnLeftOrRight2(int direction) {
+			System.out.println("turnLeftOrRight2 :" + direction);
 			pos2D.setSpeed(0, 0.3 * direction);
 			try {
 				sleep(3142);
@@ -216,20 +212,17 @@ public class MainApp {
 	public class OdometryThread extends Thread {
 
 		private Position2DInterface pos2D;
-		private boolean running;
+		private boolean isProgramRunning;
 
-		public void setRunning(boolean running) {
-			this.running = running;
-		}
-
-		public OdometryThread(Position2DInterface pos2D) {
+		public OdometryThread(Position2DInterface pos2D, boolean isProgramRunning) {
 			super();
 			this.pos2D = pos2D;
+			this.isProgramRunning = isProgramRunning;
 		}
 
 		@Override
 		public void run() {
-			while (running) {
+			while (isProgramRunning) {
 				if (checkGoal()) {
 					System.out
 							.println("Goal has been reached...\nClosing in 10 seconds");
