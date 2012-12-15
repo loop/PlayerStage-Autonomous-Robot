@@ -65,20 +65,6 @@ public class MainApp {
 			this.isProgramRunning = isProgramRunning;
 		}
 
-		@Override
-		public void run() {
-			while (isProgramRunning) {
-				if (robotTargetChecker()) {
-					System.out.println("Target reached. \nX: " + pos2D.getX() + " Y: " + pos2D.getY());
-					System.exit(0);
-				}
-				try {
-					sleep(3000);
-				} catch (InterruptedException e) {
-				}
-			}
-		}
-
 		public boolean robotTargetChecker() {
 			double currentX, currentY;
 			if (pos2D.isDataReady()) {
@@ -93,14 +79,29 @@ public class MainApp {
 			}
 			return false;
 		}
+
+		@Override
+		public void run() {
+			while (isProgramRunning) {
+				if (robotTargetChecker()) {
+					System.out.println("Target reached. \nX: " + pos2D.getX()
+							+ " Y: " + pos2D.getY());
+					System.exit(0);
+				}
+				try {
+					sleep(3000);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
 	}
 
 	private class AvoidanceThread extends Thread {
-		private Position2DInterface pos2D;
-		private RangerInterface sonar;
 		private double[] sonarValues;
 		private double distanceLimit = 0.5;
 		private double sideDistanceLimit = distanceLimit - 0.3;
+		private Position2DInterface pos2D;
+		private RangerInterface sonar;
 		double x, y;
 		private boolean isProgramRunning;
 
@@ -136,7 +137,7 @@ public class MainApp {
 						turnLeftOrRight2(-1);
 						break;
 					case 4:
-						System.out.println("This shouldn't happen");
+						System.out.println("Error.");
 					}
 					moveRobotToTarget();
 				}
@@ -176,12 +177,12 @@ public class MainApp {
 				} else {
 					return 1;
 				}
-			} else if ((sonarValuesalues[2] < sideDistanceLimit)
-					|| (sonarValuesalues[3] < sideDistanceLimit)) {
-				return 3;
 			} else if ((sonarValuesalues[6] < sideDistanceLimit)
 					|| (sonarValuesalues[7] < sideDistanceLimit)) {
 				return 2;
+			} else if ((sonarValuesalues[2] < sideDistanceLimit)
+					|| (sonarValuesalues[3] < sideDistanceLimit)) {
+				return 3;
 			} else
 				return 4;
 		}
@@ -231,9 +232,7 @@ public class MainApp {
 		}
 
 		public boolean isClear(double one, double two, double[] sonarValues) {
-			if ((one > (distanceLimit + 1.5) && two > (distanceLimit + 1.5))
-					|| (checkObstacleDistanceLimit(sonarValues))) {
-				System.out.println("Sensors clear:\n1. " + one + "\n2. " + two);
+			if (((checkObstacleDistanceLimit(sonarValues)) || one > (distanceLimit + 1.5) && two > (distanceLimit + 1.5))) {
 				return true;
 			} else {
 				return false;
