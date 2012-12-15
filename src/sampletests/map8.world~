@@ -28,6 +28,6 @@ floorplan
 tribot
 (
    name "tribot0"
-   pose [7 -5 0 270]
+   pose [8 -8 0 270]
 )
 

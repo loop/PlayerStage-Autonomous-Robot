@@ -19,7 +19,7 @@ window
 floorplan 
 (
    name "floorplan"
-   bitmap "map8.png"
+   bitmap "map7.png"
    size [22 22 2.5]
 )
 

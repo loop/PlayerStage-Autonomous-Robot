@@ -50,21 +50,57 @@ public class MainApp {
 
 	public void moveRobotToTarget() {
 		pp2dTarget = new PlayerPose2d(x, y, 0);
-		System.out.println("Moving to co ordinates...");
 		pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
+		System.out.println("Going to target.");
 	}
 
-	public void printFinal() {
-		System.out.print("FINAL>>>\nX: " + pos2D.getX() + "\nY: "
-				+ pos2D.getY());
+	private class targetChecker extends Thread {
+
+		private boolean isProgramRunning;
+		private Position2DInterface pos2D;
+
+		public targetChecker(Position2DInterface pos2D, boolean isProgramRunning) {
+			super();
+			this.pos2D = pos2D;
+			this.isProgramRunning = isProgramRunning;
+		}
+
+		@Override
+		public void run() {
+			while (isProgramRunning) {
+				if (robotTargetChecker()) {
+					System.out.println("Target reached. \nX: " + pos2D.getX() + " Y: " + pos2D.getY());
+					System.exit(0);
+				}
+				try {
+					sleep(3000);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+
+		public boolean robotTargetChecker() {
+			double currentX, currentY;
+			if (pos2D.isDataReady()) {
+				currentX = pos2D.getX();
+				currentY = pos2D.getY();
+				if ((currentX > x - 0.1) && (currentX < x + 0.1)
+						&& (currentY > y - 0.1) && (currentY < y + 0.1)) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+			return false;
+		}
 	}
 
 	private class AvoidanceThread extends Thread {
 		private Position2DInterface pos2D;
 		private RangerInterface sonar;
 		private double[] sonarValues;
-		private double threshold = 0.5;
-		private double sThreshold = threshold - 0.4;
+		private double distanceLimit = 0.5;
+		private double sideDistanceLimit = distanceLimit - 0.3;
 		double x, y;
 		private boolean isProgramRunning;
 
@@ -85,8 +121,8 @@ public class MainApp {
 				while (!sonar.isDataReady())
 					;
 				sonarValues = sonar.getData().getRanges();
-				if (isClose(sonarValues)) {
-					switch (checkDirection(sonarValues)) {
+				if (checkObstacleDistanceLimit(sonarValues)) {
+					switch (robotTurnChecker(sonarValues)) {
 					case 0:
 						turnLeftOrRight(1);
 						break;
@@ -117,22 +153,22 @@ public class MainApp {
 			pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
 		}
 
-		public boolean isClose(double[] sonarValuesalues) {
-			if ((sonarValuesalues[0] < threshold)
-					|| (sonarValuesalues[1] < threshold)
-					|| (sonarValuesalues[2] < sThreshold)
-					|| (sonarValuesalues[3] < sThreshold)
-					|| (sonarValuesalues[6] < sThreshold)
-					|| (sonarValuesalues[7] < sThreshold)) {
+		public boolean checkObstacleDistanceLimit(double[] sonarValuesalues) {
+			if ((sonarValuesalues[0] < distanceLimit)
+					|| (sonarValuesalues[1] < distanceLimit)
+					|| (sonarValuesalues[2] < sideDistanceLimit)
+					|| (sonarValuesalues[3] < sideDistanceLimit)
+					|| (sonarValuesalues[6] < sideDistanceLimit)
+					|| (sonarValuesalues[7] < sideDistanceLimit)) {
 				return true;
 			} else {
 				return false;
 			}
 		}
 
-		public int checkDirection(double[] sonarValuesalues) {
-			if ((sonarValuesalues[0] < threshold)
-					|| (sonarValuesalues[1] < threshold)) {
+		public int robotTurnChecker(double[] sonarValuesalues) {
+			if ((sonarValuesalues[0] < distanceLimit)
+					|| (sonarValuesalues[1] < distanceLimit)) {
 				double frontLeftSensor = sonarValuesalues[1];
 				double frontRightSensor = sonarValuesalues[0];
 				if (frontLeftSensor > frontRightSensor) {
@@ -140,11 +176,11 @@ public class MainApp {
 				} else {
 					return 1;
 				}
-			} else if ((sonarValuesalues[2] < sThreshold)
-					|| (sonarValuesalues[3] < sThreshold)) {
+			} else if ((sonarValuesalues[2] < sideDistanceLimit)
+					|| (sonarValuesalues[3] < sideDistanceLimit)) {
 				return 3;
-			} else if ((sonarValuesalues[6] < sThreshold)
-					|| (sonarValuesalues[7] < sThreshold)) {
+			} else if ((sonarValuesalues[6] < sideDistanceLimit)
+					|| (sonarValuesalues[7] < sideDistanceLimit)) {
 				return 2;
 			} else
 				return 4;
@@ -195,57 +231,13 @@ public class MainApp {
 		}
 
 		public boolean isClear(double one, double two, double[] sonarValues) {
-			if ((one > (threshold + 1.5) && two > (threshold + 1.5))
-					|| (isClose(sonarValues))) {
+			if ((one > (distanceLimit + 1.5) && two > (distanceLimit + 1.5))
+					|| (checkObstacleDistanceLimit(sonarValues))) {
 				System.out.println("Sensors clear:\n1. " + one + "\n2. " + two);
 				return true;
 			} else {
 				return false;
 			}
-		}
-	}
-
-	private class targetChecker extends Thread {
-
-		private boolean isProgramRunning;
-		private Position2DInterface pos2D;
-
-		public targetChecker(Position2DInterface pos2D, boolean isProgramRunning) {
-			super();
-			this.pos2D = pos2D;
-			this.isProgramRunning = isProgramRunning;
-		}
-
-		@Override
-		public void run() {
-			while (isProgramRunning) {
-				if (robotTargetChecker()) {
-					System.out
-							.println("Goal has been reached...\nClosing in 10 seconds");
-					System.out.println("X: " + pos2D.getX());
-					System.out.println("Y: " + pos2D.getY());
-					System.exit(0);
-				}
-				try {
-					sleep(6000);
-				} catch (InterruptedException e) {
-				}
-			}
-		}
-
-		public boolean robotTargetChecker() {
-			double currentX, currentY;
-			if (pos2D.isDataReady()) {
-				currentX = pos2D.getX();
-				currentY = pos2D.getY();
-				if ((currentX > x - 0.1) && (currentX < x + 0.1)
-						&& (currentY > y - 0.1) && (currentY < y + 0.1)) {
-					return true;
-				}
-			} else {
-				return false;
-			}
-			return false;
 		}
 	}
 
