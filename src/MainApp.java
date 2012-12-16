@@ -231,9 +231,9 @@ public class MainApp {
 			}
 		}
 
-		private boolean checkForClearance(double one, double two, double[] sonarValues) {
-			if (((checkObstacleDistanceLimit(sonarValues)) || one > (distanceLimit + 1.5)
-					&& two > (distanceLimit + 1.5))) {
+		private boolean checkForClearance(double first, double second, double[] sonarValues) {
+			if (((checkObstacleDistanceLimit(sonarValues)) || second > (distanceLimit + 1.5)
+					&& first > (distanceLimit + 1.5))) {
 				return true;
 			} else {
 				return false;
