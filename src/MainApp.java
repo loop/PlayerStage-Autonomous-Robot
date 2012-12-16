@@ -13,7 +13,11 @@ public class MainApp {
 	PlayerClient robot = null;
 	PlayerPose2d pp2dTarget;
 
-	public MainApp(String[] args) {
+	public static void main(String[] args) {
+		new MainApp(args);
+	}
+
+	private MainApp(String[] args) {
 		if (args.length == 0) {
 			System.out.println("R04749");
 		}
@@ -33,7 +37,7 @@ public class MainApp {
 		}
 	}
 
-	public void connectToRobot() {
+	private void connectToRobot() {
 		try {
 			robot = new PlayerClient("localhost", 6665);
 			pos2D = robot.requestInterfacePosition2D(0,
@@ -48,10 +52,9 @@ public class MainApp {
 		robot.runThreaded(-1, -1);
 	}
 
-	public void moveRobotToTarget() {
+	private void moveRobotToTarget() {
 		pp2dTarget = new PlayerPose2d(x, y, 0);
 		pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
-		System.out.println("Going to target.");
 	}
 
 	private class targetChecker extends Thread {
@@ -59,13 +62,13 @@ public class MainApp {
 		private boolean isProgramRunning;
 		private Position2DInterface pos2D;
 
-		public targetChecker(Position2DInterface pos2D, boolean isProgramRunning) {
+		private targetChecker(Position2DInterface pos2D, boolean isProgramRunning) {
 			super();
 			this.pos2D = pos2D;
 			this.isProgramRunning = isProgramRunning;
 		}
 
-		public boolean robotTargetChecker() {
+		private boolean robotTargetChecker() {
 			double currentX, currentY;
 			if (pos2D.isDataReady()) {
 				currentX = pos2D.getX();
@@ -105,7 +108,7 @@ public class MainApp {
 		double x, y;
 		private boolean isProgramRunning;
 
-		public AvoidanceThread(Position2DInterface pos2D,
+		private AvoidanceThread(Position2DInterface pos2D,
 				RangerInterface sonar, double x, double y,
 				boolean isProgramRunning) {
 			super();
@@ -114,6 +117,11 @@ public class MainApp {
 			this.isProgramRunning = isProgramRunning;
 			this.x = x;
 			this.y = y;
+		}
+		
+		private void moveRobotToTarget() {
+			pp2dTarget = new PlayerPose2d(x, y, 0);
+			pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
 		}
 
 		@Override
@@ -148,13 +156,7 @@ public class MainApp {
 			}
 		}
 
-		public void moveRobotToTarget() {
-			pp2dTarget = new PlayerPose2d(x, y, 0);
-			System.out.println("Moving to co ordinates...");
-			pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
-		}
-
-		public boolean checkObstacleDistanceLimit(double[] sonarValuesalues) {
+		private boolean checkObstacleDistanceLimit(double[] sonarValuesalues) {
 			if ((sonarValuesalues[0] < distanceLimit)
 					|| (sonarValuesalues[1] < distanceLimit)
 					|| (sonarValuesalues[2] < sideDistanceLimit)
@@ -167,7 +169,7 @@ public class MainApp {
 			}
 		}
 
-		public int robotTurnChecker(double[] sonarValuesalues) {
+		private int robotTurnChecker(double[] sonarValuesalues) {
 			if ((sonarValuesalues[0] < distanceLimit)
 					|| (sonarValuesalues[1] < distanceLimit)) {
 				double frontLeftSensor = sonarValuesalues[1];
@@ -186,9 +188,21 @@ public class MainApp {
 			} else
 				return 4;
 		}
+		
+		private void turnLeftOrRight2(int direction) {
+			pos2D.setSpeed(0, 0.3 * direction);
+			try {
+				sleep(3142);
+			} catch (InterruptedException e) {
+			}
+			pos2D.setSpeed(1, 0);
+			try {
+				sleep(800);
+			} catch (InterruptedException e) {
+			}
+		}
 
-		public void turnLeftOrRight(int direction) {
-			System.out.println("turnLeftOrRight :" + direction);
+		private void turnLeftOrRight(int direction) {
 			int sonarSensorNumber;
 			if (direction == 1) {
 				sonarSensorNumber = 6;
@@ -205,7 +219,7 @@ public class MainApp {
 				if (sonar.isDataReady()) {
 					sonarValues = sonar.getData().getRanges();
 				}
-				if (isClear(sonarValues[sonarSensorNumber],
+				if (checkForClearance(sonarValues[sonarSensorNumber],
 						sonarValues[sonarSensorNumber], sonarValues)) {
 					break;
 				}
@@ -217,31 +231,14 @@ public class MainApp {
 			}
 		}
 
-		public void turnLeftOrRight2(int direction) {
-			System.out.println("turnLeftOrRight2 :" + direction);
-			pos2D.setSpeed(0, 0.3 * direction);
-			try {
-				sleep(3142);
-			} catch (InterruptedException e) {
-			}
-			pos2D.setSpeed(1, 0);
-			try {
-				sleep(800);
-			} catch (InterruptedException e) {
-			}
-		}
-
-		public boolean isClear(double one, double two, double[] sonarValues) {
-			if (((checkObstacleDistanceLimit(sonarValues)) || one > (distanceLimit + 1.5) && two > (distanceLimit + 1.5))) {
+		private boolean checkForClearance(double one, double two, double[] sonarValues) {
+			if (((checkObstacleDistanceLimit(sonarValues)) || one > (distanceLimit + 1.5)
+					&& two > (distanceLimit + 1.5))) {
 				return true;
 			} else {
 				return false;
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		new MainApp(args);
 	}
 
 }
