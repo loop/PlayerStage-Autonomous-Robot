@@ -26,8 +26,6 @@ public class MainApp {
 			x = Double.parseDouble(args[0]);
 			y = Double.parseDouble(args[1]);
 
-			System.out.println("X: " + x + " Y: " + y);
-
 			moveRobotToTarget();
 			targetChecker tcCheckTarget = new targetChecker(pos2D, true);
 			AvoidanceThread atAvoidStuff = new AvoidanceThread(pos2D, sonar, x,
@@ -62,7 +60,8 @@ public class MainApp {
 		private boolean isProgramRunning;
 		private Position2DInterface pos2D;
 
-		private targetChecker(Position2DInterface pos2D, boolean isProgramRunning) {
+		private targetChecker(Position2DInterface pos2D,
+				boolean isProgramRunning) {
 			super();
 			this.pos2D = pos2D;
 			this.isProgramRunning = isProgramRunning;
@@ -87,8 +86,6 @@ public class MainApp {
 		public void run() {
 			while (isProgramRunning) {
 				if (robotTargetChecker()) {
-					System.out.println("Target reached. \nX: " + pos2D.getX()
-							+ " Y: " + pos2D.getY());
 					System.exit(0);
 				}
 				try {
@@ -118,7 +115,7 @@ public class MainApp {
 			this.x = x;
 			this.y = y;
 		}
-		
+
 		private void moveRobotToTarget() {
 			pp2dTarget = new PlayerPose2d(x, y, 0);
 			pos2D.setPosition(pp2dTarget, new PlayerPose2d(), 1);
@@ -130,21 +127,17 @@ public class MainApp {
 				while (!sonar.isDataReady())
 					;
 				sonarValues = sonar.getData().getRanges();
+
 				if (checkObstacleDistanceLimit(sonarValues)) {
-					switch (robotTurnChecker(sonarValues)) {
-					case 0:
+					if (robotTurnChecker(sonarValues) == 0) {
 						turnLeftOrRight(1);
-						break;
-					case 1:
+					} else if (robotTurnChecker(sonarValues) == 1) {
 						turnLeftOrRight(-1);
-						break;
-					case 2:
+					} else if (robotTurnChecker(sonarValues) == 2) {
 						turnLeftOrRight2(1);
-						break;
-					case 3:
+					} else if (robotTurnChecker(sonarValues) == 3) {
 						turnLeftOrRight2(-1);
-						break;
-					case 4:
+					} else if (robotTurnChecker(sonarValues) == 4) {
 						System.out.println("Error.");
 					}
 					moveRobotToTarget();
@@ -188,7 +181,7 @@ public class MainApp {
 			} else
 				return 4;
 		}
-		
+
 		private void turnLeftOrRight2(int direction) {
 			pos2D.setSpeed(0, 0.3 * direction);
 			try {
@@ -231,7 +224,8 @@ public class MainApp {
 			}
 		}
 
-		private boolean checkForClearance(double first, double second, double[] sonarValues) {
+		private boolean checkForClearance(double first, double second,
+				double[] sonarValues) {
 			if (((checkObstacleDistanceLimit(sonarValues)) || second > (distanceLimit + 1.5)
 					&& first > (distanceLimit + 1.5))) {
 				return true;
