@@ -139,6 +139,8 @@ public class MainApp {
 						turnLeftOrRight2(-1);
 					} else if (robotTurnChecker(sonarValues) == 4) {
 						System.out.println("Error.");
+					} else {
+						System.out.println("Default.");
 					}
 					moveRobotToTarget();
 				}
